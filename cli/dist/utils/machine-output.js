@@ -24,7 +24,7 @@ export function isMachineOutputEnvelope(value) {
     if (typeof value !== "object" || value === null)
         return false;
     const envelope = value;
-    if (typeof envelope.schemaVersion !== "number")
+    if (envelope.schemaVersion !== SCHEMA_VERSION)
         return false;
     if (!("data" in envelope))
         return false;

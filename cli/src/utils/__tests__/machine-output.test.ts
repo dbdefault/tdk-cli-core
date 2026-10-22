@@ -21,6 +21,10 @@ describe("isMachineOutputEnvelope", () => {
     expect(isMachineOutputEnvelope({ schemaVersion: 1, data: null, errors: [] })).toBe(true);
   });
 
+  it("rejects an unsupported numeric schemaVersion", () => {
+    expect(isMachineOutputEnvelope({ schemaVersion: 2, data: null, errors: [] })).toBe(false);
+  });
+
   it("rejects envelopes missing required fields or with wrong types", () => {
     expect(isMachineOutputEnvelope(null)).toBe(false);
     expect(isMachineOutputEnvelope({ schemaVersion: 1, data: null })).toBe(false);

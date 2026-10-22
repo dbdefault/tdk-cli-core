@@ -41,7 +41,7 @@ function isMachineError(value: unknown): value is MachineError {
 export function isMachineOutputEnvelope(value: unknown): value is MachineOutputEnvelope {
   if (typeof value !== "object" || value === null) return false;
   const envelope = value as Record<string, unknown>;
-  if (typeof envelope.schemaVersion !== "number") return false;
+  if (envelope.schemaVersion !== SCHEMA_VERSION) return false;
   if (!("data" in envelope)) return false;
   if (!Array.isArray(envelope.errors)) return false;
   return envelope.errors.every(isMachineError);
