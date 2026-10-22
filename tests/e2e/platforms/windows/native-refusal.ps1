@@ -34,7 +34,13 @@ function Invoke-NativeWindowsRefusal {
   return $text
 }
 
-$null = Invoke-NativeWindowsRefusal -Label 'tdk doctor' -CliArgs @('doctor')
+$doctorText = Invoke-NativeWindowsRefusal -Label 'tdk doctor' -CliArgs @('doctor')
+if ($doctorText -notmatch '(?i)Docker container mode|Windows containers|Linux containers') {
+  throw 'tdk doctor did not report Docker container mode diagnostics on native Windows.'
+}
+if ($doctorText -notmatch '(?i)tdk\.localhost|Windows ports and DNS|core\.autocrlf|File sharing') {
+  throw 'tdk doctor did not report Windows ports/DNS or autocrlf diagnostics on native Windows.'
+}
 $null = Invoke-NativeWindowsRefusal -Label 'tdk up --dry-run' -CliArgs @('up', '--dry-run')
 
 $beforeRuntimeProcesses = @(

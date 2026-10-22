@@ -516,6 +516,8 @@ function Invoke-Wh4 {
   if ($doctor.ExitCode -eq 0) { throw 'tdk doctor succeeded on native Windows; it must refuse' }
   Assert-Text $doctor.Text 'WSL2' 'tdk doctor did not point at WSL2'
   Assert-Text $doctor.Text 'Ubuntu' 'tdk doctor did not point at WSL2 Ubuntu'
+  Assert-Text $doctor.Text 'Docker container mode|Windows containers|Linux containers' 'tdk doctor did not report Docker container mode'
+  Assert-Text $doctor.Text 'tdk\.localhost|Windows ports and DNS|core\.autocrlf|File sharing' 'tdk doctor did not report Windows ports/DNS or autocrlf diagnostics'
 
   $doctorJson = Invoke-Exe $exe @('doctor', '--json') $workDir
   if ($doctorJson.ExitCode -eq 0) { throw 'tdk doctor --json succeeded on native Windows; it must refuse' }
@@ -527,6 +529,10 @@ function Invoke-Wh4 {
   $nativeCheck = @($report.data.checks | Where-Object { $_.name -eq 'Native Windows support' })
   if ($nativeCheck.Count -ne 1) { throw 'tdk doctor --json did not report the native Windows finding' }
   if ($nativeCheck[0].didPass -ne $false) { throw 'tdk doctor --json reported the native Windows finding as passing' }
+  foreach ($expectedName in @('Windows Runtime Tools', 'Docker container mode', 'Windows ports and DNS')) {
+    $match = @($report.data.checks | Where-Object { $_.name -eq $expectedName })
+    if ($match.Count -ne 1) { throw "tdk doctor --json missing Windows diagnostic check: $expectedName" }
+  }
 
   $processesBefore = Get-RuntimeProcesses
   $containersBefore = Get-ContainerIds
